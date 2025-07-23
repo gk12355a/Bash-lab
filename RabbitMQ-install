@@ -1,0 +1,132 @@
+#!/bin/bash
+
+# Script để cài đặt RabbitMQ trên CentOS Stream 9
+# Chạy với quyền sudo: sudo ./install_rabbitmq.sh
+
+# Kiểm tra quyền sudo
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Error: Script must be run as root or with sudo."
+    exit 1
+fi
+
+echo "Starting RabbitMQ installation on CentOS Stream 9..."
+
+# 1. Cài đặt EPEL repository
+echo "Installing EPEL release..."
+dnf install -y epel-release >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "EPEL release installed successfully."
+else
+    echo "Error: Failed to install EPEL release."
+    exit 1
+fi
+
+# 2. Cài đặt phụ thuộc wget
+echo "Installing wget..."
+dnf install -y wget >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "wget installed successfully."
+else
+    echo "Error: Failed to install wget."
+    exit 1
+fi
+
+# 3. Cài đặt kho RabbitMQ
+echo "Installing RabbitMQ repository (centos-release-rabbitmq-38)..."
+dnf install -y centos-release-rabbitmq-38 >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "RabbitMQ repository installed successfully."
+else
+    echo "Error: Failed to install RabbitMQ repository."
+    exit 1
+fi
+
+# 4. Cài đặt RabbitMQ server
+echo "Installing RabbitMQ server..."
+dnf --enablerepo=centos-rabbitmq-38 install -y rabbitmq-server >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "RabbitMQ server installed successfully."
+else
+    echo "Error: Failed to install RabbitMQ server."
+    exit 1
+fi
+
+# 5. Kích hoạt và khởi động dịch vụ RabbitMQ
+echo "Enabling and starting RabbitMQ service..."
+systemctl enable --now rabbitmq-server >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "RabbitMQ service enabled and started."
+else
+    echo "Error: Failed to enable or start RabbitMQ service."
+    exit 1
+fi
+
+# 6. Cấu hình cho phép truy cập từ xa
+echo "Configuring RabbitMQ to allow remote users..."
+echo "loopback_users = none" > /etc/rabbitmq/rabbitmq.conf
+if [ $? -eq 0 ]; then
+    echo "Remote user access configured."
+else
+    echo "Error: Failed to configure remote user access."
+    exit 1
+fi
+
+# 7. Tạo user test và gán quyền administrator
+echo "Adding test user with administrator privileges..."
+rabbitmqctl add_user test test >/dev/null 2>&1 || true
+rabbitmqctl set_user_tags test administrator >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Test user created and set as administrator."
+else
+    echo "Error: Failed to create test user or set administrator tag."
+    exit 1
+fi
+
+# 8. Khởi động lại RabbitMQ để áp dụng cấu hình
+echo "Restarting RabbitMQ service..."
+systemctl restart rabbitmq-server >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "RabbitMQ service restarted."
+else
+    echo "Error: Failed to restart RabbitMQ service."
+    exit 1
+fi
+
+# 9. Mở cổng 5672 trên firewall
+echo "Opening port 5672 in firewall..."
+firewall-cmd --add-port=5672/tcp --permanent >/dev/null 2>&1
+firewall-cmd --reload >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Port 5672 opened in firewall."
+else
+    echo "Error: Failed to open port 5672."
+    exit 1
+fi
+
+# 10. Kiểm tra trạng thái cài đặt
+echo "Verifying RabbitMQ installation..."
+if rpm -q rabbitmq-server >/dev/null 2>&1; then
+    echo "RabbitMQ package is installed."
+else
+    echo "Warning: RabbitMQ package not found."
+fi
+
+if systemctl is-active rabbitmq-server >/dev/null 2>&1; then
+    echo "RabbitMQ service is running."
+else
+    echo "Warning: RabbitMQ service is not running."
+fi
+
+if rabbitmqctl list_users | grep -q test; then
+    echo "Test user exists."
+else
+    echo "Warning: Test user not found."
+fi
+
+if firewall-cmd --list-ports | grep -q 5672; then
+    echo "Port 5672 is open in firewall."
+else
+    echo "Warning: Port 5672 is not open."
+fi
+
+echo "RabbitMQ installation completed successfully."
