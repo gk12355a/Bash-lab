@@ -1,0 +1,104 @@
+<mxfile host="app.diagrams.net" modified="2023-01-01T00:00:00.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram id="k8s_cluster" name="Page-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Worker-Route -->
+        <mxCell id="worker_route" value="route-ha&lt;br&gt;192.168.23.44" style="swimlane;whiteSpace=wrap;html=1;startSize=40;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="320" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="wr_kp" value="kube-&lt;br&gt;proxy" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_route">
+          <mxGeometry x="40" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="wr_kl" value="kubelet" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_route">
+          <mxGeometry x="135" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="wr_crio" value="CRI-O" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_route">
+          <mxGeometry x="230" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="wr_hap" value="HA Proxy Ingress&lt;br&gt;Controller" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="worker_route">
+          <mxGeometry x="100" y="110" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- NFS SERVER -->
+        <mxCell id="nfs_server" value="nfs&lt;br&gt;192.168.23.45" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="140" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- K8s Cluster -->
+        <mxCell id="k8s_cluster_box" value="K8s Cluster" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="240" width="700" height="510" as="geometry" />
+        </mxCell>
+
+        <!-- Control Plane -->
+        <mxCell id="control_plane" value="master&lt;br&gt;192.168.23.41" style="swimlane;whiteSpace=wrap;html=1;startSize=40;fontStyle=1;" vertex="1" parent="k8s_cluster_box">
+          <mxGeometry x="40" y="40" width="240" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="cp_sched" value="Scheduler" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="control_plane">
+          <mxGeometry x="40" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cp_cm" value="Controller&lt;br&gt;manager" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="control_plane">
+          <mxGeometry x="150" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cp_api" value="API&lt;br&gt;Server" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="control_plane">
+          <mxGeometry x="40" y="150" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cp_etcd" value="ETCD" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="control_plane">
+          <mxGeometry x="150" y="150" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cp_kp" value="kube-&lt;br&gt;proxy" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="control_plane">
+          <mxGeometry x="40" y="250" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cp_crio" value="CRI-O" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="control_plane">
+          <mxGeometry x="150" y="250" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cp_kl" value="kubelet" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="control_plane">
+          <mxGeometry x="40" y="350" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cp_dns" value="CoreDNS" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="control_plane">
+          <mxGeometry x="150" y="350" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Worker Node 01 -->
+        <mxCell id="worker_node01" value="worker-1&lt;br&gt;192.168.23.42" style="swimlane;whiteSpace=wrap;html=1;startSize=40;fontStyle=1;" vertex="1" parent="k8s_cluster_box">
+          <mxGeometry x="340" y="40" width="320" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="w1_kp" value="kube-&lt;br&gt;proxy" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_node01">
+          <mxGeometry x="40" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w1_kl" value="kubelet" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_node01">
+          <mxGeometry x="135" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w1_crio" value="CRI-O" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_node01">
+          <mxGeometry x="230" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Worker Node 02 -->
+        <mxCell id="worker_node02" value="worker-2&lt;br&gt;192.168.23.43" style="swimlane;whiteSpace=wrap;html=1;startSize=40;fontStyle=1;" vertex="1" parent="k8s_cluster_box">
+          <mxGeometry x="340" y="200" width="320" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="w2_kp" value="kube-&lt;br&gt;proxy" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_node02">
+          <mxGeometry x="40" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w2_kl" value="kubelet" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_node02">
+          <mxGeometry x="135" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w2_crio" value="CRI-O" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3366ff;strokeColor=none;fontColor=#000000;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="worker_node02">
+          <mxGeometry x="230" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Connections (Arrow from worker route to cluster) -->
+        <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="worker_route" target="k8s_cluster_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Connection to NFS Server -->
+        <mxCell id="edge_nfs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="nfs_server" target="k8s_cluster_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

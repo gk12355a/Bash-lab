@@ -1,0 +1,140 @@
+✅ Sau khi chạy setup_master.sh (trên DB-master – 192.168.23.12)
+vào /etc/mysql/mariadb.conf.d/50-server.cnf chỉnh bind-adresses lại thành 0.0.0.0
+Vào MySQL kiểm tra trạng thái binlog:
+
+mysql -u root -p -e "SHOW MASTER STATUS\G"
+
+#mysql-bin.000004
+#  Position: 1780
+mysql-bin.000006
+342
+Ghi lại:
+
+File (ví dụ: mysql-bin.000001)
+
+Position (ví dụ: 123)
+
+Kiểm tra DB & user:
+
+mysql -u root -p -e "SHOW DATABASES;"
+mysql -u root -p -e "SELECT user, host FROM mysql.user;"
+
+✅ Sau khi chạy setup_slave.sh (trên DB-slave – 192.168.23.13)
+
+Vào MySQL:
+
+mysql -u root -p
+
+
+Gán thông tin replication từ Master (thay FILE & POS bằng giá trị từ Master):
+
+STOP SLAVE;
+RESET SLAVE ALL;
+CHANGE MASTER TO
+  MASTER_HOST='192.168.23.12',
+  MASTER_USER='replica_user',
+  MASTER_PASSWORD='Tech@1604',
+  MASTER_LOG_FILE='mysql-bin.000004',
+  MASTER_LOG_POS=1780;
+START SLAVE;
+
+
+Kiểm tra:
+
+SHOW SLAVE STATUS\G
+
+
+Slave_IO_Running: Yes
+
+Slave_SQL_Running: Yes
+
+✅ Sau khi chạy setup_alf.sh (trên alf – 192.168.23.11)
+
+Chỉnh file /etc/mha/app1.cnf:
+
+Điền đúng:
+
+user=root
+password=YOUR_ROOT_PASSWORD   # root password của MariaDB
+ssh_user=ubuntu               # hoặc user thật bạn SSH vào DBs
+
+
+Copy SSH key từ alf sang DB-master và DB-slave:
+
+ssh-keygen -t rsa
+ssh-copy-id ubuntu@192.168.23.12
+ssh-copy-id ubuntu@192.168.23.13
+
+
+Test SSH:
+
+ssh ubuntu@192.168.23.12 hostname
+ssh ubuntu@192.168.23.13 hostname
+
+
+Cài MHA Node trên DB-master và DB-slave:
+
+wget https://github.com/yoshinorim/mha4mysql-node/releases/download/v0.58/mha4mysql-node_0.58-0_all.deb
+sudo apt install -y ./mha4mysql-node_0.58-0_all.deb
+
+✅ Kiểm tra hệ thống MHA
+
+Kiểm tra SSH:
+
+masterha_check_ssh --conf=/etc/mha/app1.cnf
+
+
+Kiểm tra replication:
+
+masterha_check_repl --conf=/etc/mha/app1.cnf
+
+
+Start MHA Manager:
+
+masterha_manager --conf=/etc/mha/app1.cnf
+
+
+Xem log:
+
+tail -f /var/log/mha/app1.log
+
+✅ Kiểm tra ProxySQL
+
+Đăng nhập admin interface:
+
+mysql -u admin -padmin -h 127.0.0.1 -P 6032
+
+
+Xem server:
+
+SELECT * FROM mysql_servers;
+
+
+Test app user qua ProxySQL:
+
+mysql -u app_user -pTech@1604 -h 127.0.0.1 -P 6033 -D mydb -e "SELECT * FROM users;"
+
+✅ Test Failover
+
+Stop MariaDB trên DB-master:
+
+sudo systemctl stop mariadb
+
+
+Xem log trên alf:
+
+tail -f /var/log/mha/app1.log
+
+
+ProxySQL sẽ tự update Slave thành Master:
+
+mysql -u admin -padmin -h 127.0.0.1 -P 6032 -e "SELECT * FROM mysql_servers;"
+
+
+👉 Sau 3 script bạn cần làm 3 việc thủ công quan trọng:
+
+Cấu hình CHANGE MASTER TO trên DB-slave.
+
+Chỉnh file /etc/mha/app1.cnf và setup SSH không mật khẩu từ alf đến DBs.
+
+Start MHA Manager và test failover.
